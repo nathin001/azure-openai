@@ -6,9 +6,11 @@ import http.client
 import json
 import urllib.parse
 from gettoken import get_token 
+from werkzeug.utils import secure_filename
 
 
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = 'uploads'
 
 appKey = 'gzu3Qn6dPavwpBIl'  
 token =  get_token() 
@@ -159,7 +161,14 @@ def upload():
         abort(401)  
     
     audio_file = request.files.get('audio')
-    tts_result = recognize_audio(appKey,token,audio_file.filename)
+    if audio_file:
+         # 使用 secure_filename 清洁文件名  
+        filename = secure_filename(audio_file.filename)  
+        # 保存文件到上传文件夹  
+        audio_file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)  
+        audio_file.save(audio_file_path) 
+
+    tts_result = recognize_audio(appKey,token,audio_file_path)
     print("tts-result:",tts_result)
     chat_response = chat(tts_result)
     #print("AI:",chat_response)
@@ -175,4 +184,4 @@ def upload():
     })
 
 if __name__ == '__main__':  
-    app.run(port=5000)  
+    app.run(host='0.0.0.0',port=5000)  
