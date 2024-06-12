@@ -1,6 +1,6 @@
 import os  
 from openai import AzureOpenAI
-from flask import Flask, request, jsonify, abort  
+from flask import Flask, request, jsonify, abort, send_from_directory  
 from collections import deque
 import http.client  
 import json
@@ -175,13 +175,23 @@ def upload():
     
     #print("encodetext:",textUrlencode)
     processGETRequest(appKey,token,chat_response,audioSaveFile,format,sampleRate)
-    audio_file_url = request.host_url + audioSaveFile
+    audio_file_url = request.host_url + "download/" + audioSaveFile
     
     
     return jsonify({  
         "audio_url": audio_file_url,  
         "text": chat_response  
     })
+
+@app.route('/download/<filename>',methods=['GET'])
+def download_file(filename):
+    safe_filename = secure_filename(filename)
+    directory = '.'
+    try:
+        return send_from_directory(directory,safe_filename,as_attachment=True)
+    except FileNotFoundError:  
+        abort(404)  
+
 
 if __name__ == '__main__':  
     app.run(host='0.0.0.0',port=5000)  
