@@ -11,7 +11,6 @@ from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
-
 appKey = 'gzu3Qn6dPavwpBIl'  
 token =  get_token() 
 audioSaveFile = 'syAudio.wav'
