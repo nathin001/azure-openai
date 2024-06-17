@@ -167,6 +167,9 @@ def upload():
         audio_file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)  
         audio_file.save(audio_file_path) 
 
+    else:
+        print("No audio file found in the request")
+
     tts_result = recognize_audio(appKey,token,audio_file_path)
     print("tts-result:",tts_result)
     chat_response = chat(tts_result)
